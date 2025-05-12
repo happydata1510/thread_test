@@ -20,4 +20,5 @@ databases:
   - name: thread-generator-db
     databaseName: thread_generator
     user: thread_generator
+    plan: free
     ipAllowList: [] 

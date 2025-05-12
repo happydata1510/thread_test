@@ -12,4 +12,7 @@ cd thread_generator
 python manage.py migrate
 
 # Collect static files
-python manage.py collectstatic --no-input 
+python manage.py collectstatic --no-input
+
+# Create or update superuser if needed (optional)
+# python manage.py createsuperuser --noinput 
