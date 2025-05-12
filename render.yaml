@@ -3,7 +3,7 @@ services:
     name: thread-generator
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn wsgi_app:application"
+    startCommand: "gunicorn --config gunicorn_config.py wsgi_app:application"
     envVars:
       - key: SECRET_KEY
         generateValue: true
