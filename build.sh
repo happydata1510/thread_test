@@ -11,6 +11,9 @@ echo "Python version: $(python --version)"
 # Install dependencies
 pip install -r requirements.txt
 
+# Set Django settings module explicitly
+export DJANGO_SETTINGS_MODULE=thread_generator.settings
+
 # Navigate to the project directory
 cd thread_generator
 echo "Project directory: $(pwd)"
@@ -19,6 +22,10 @@ ls -la
 
 # Show Python path for debugging
 python -c "import sys; print('Python path:'); print('\n'.join(sys.path))"
+
+# Check Django settings
+echo "Django settings module: $DJANGO_SETTINGS_MODULE"
+python -c "import django; django.setup(); print('Django setup successful')"
 
 # Run migrations
 python manage.py migrate

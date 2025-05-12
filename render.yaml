@@ -17,6 +17,8 @@ services:
           property: connectionString
       - key: PYTHONPATH
         value: ".:/opt/render/project/src:/opt/render/project/src/thread_generator"
+      - key: DJANGO_SETTINGS_MODULE
+        value: "thread_generator.settings"
 
 databases:
   - name: thread-generator-db
