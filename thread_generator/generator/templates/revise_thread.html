@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">스레드 콘텐츠 수정</h1>
+        <p class="lead text-muted">콘텐츠를 더 좋게 만들기 위한 피드백을 입력하세요</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- 원본 콘텐츠 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">원본 콘텐츠</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">주제: {{ thread.topic }}</h6>
+                    <p class="badge bg-secondary mb-3">{{ thread.get_style_display }}</p>
+                    
+                    {% if thread.requirements %}
+                    <div class="mb-3">
+                        <small class="text-muted">세부 요건:</small>
+                        <p class="small">{{ thread.requirements }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="thread-content">
+                        {{ thread.content|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 수정 요청 폼 -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">수정 요청사항 입력</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group mb-4">
+                            <label for="{{ form.revision_prompt.id_for_label }}">{{ form.revision_prompt.label }}</label>
+                            {{ form.revision_prompt }}
+                            <small class="form-text text-muted">{{ form.revision_prompt.help_text }}</small>
+                        </div>
+                        
+                        {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'thread_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> 목록으로
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-pen"></i> 수정 미리보기
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.thread-content {
+    white-space: pre-line;
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">수정된 콘텐츠 미리보기</h1>
+        <p class="lead text-muted">피드백을 반영한 수정된 콘텐츠를 검토하고 적용하세요</p>
+    </div>
+
+    <div class="row">
+        <!-- 원본 콘텐츠 -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">원본 콘텐츠</h5>
+                    <button class="btn btn-sm btn-light copy-btn" data-content="original">
+                        <i class="fas fa-copy"></i> 복사
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">주제: {{ thread.topic }}</h6>
+                    <p class="badge bg-secondary mb-3">{{ thread.get_style_display }}</p>
+                    
+                    {% if thread.requirements %}
+                    <div class="mb-3">
+                        <small class="text-muted">세부 요건:</small>
+                        <p class="small">{{ thread.requirements }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="thread-content" id="original-content">
+                        {{ thread.content|linebreaks }}
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <small class="text-muted">ID: {{ thread.customer.thread_id }}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 수정된 콘텐츠 -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">수정된 콘텐츠</h5>
+                    <button class="btn btn-sm btn-light copy-btn" data-content="revised">
+                        <i class="fas fa-copy"></i> 복사
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">주제: {{ thread.topic }}</h6>
+                    <p class="badge bg-secondary mb-3">{{ thread.get_style_display }}</p>
+                    
+                    {% if thread.revision_prompt %}
+                    <div class="mb-3">
+                        <small class="text-muted">수정 요청사항:</small>
+                        <p class="small">{{ thread.revision_prompt }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="thread-content" id="revised-content">
+                        {{ revised_content|linebreaks }}
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <small class="text-muted">ID: {{ thread.customer.thread_id }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8 text-center">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="revised_content" value="{{ revised_content }}">
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'revise_thread' thread_id=thread.id %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> 수정 요청 수정하기
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> 이 수정 버전 적용하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.thread-content {
+    white-space: pre-line;
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+.card {
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.copy-btn {
+    transition: all 0.2s;
+}
+.copy-btn:hover {
+    background-color: #f8f9fa;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 복사 버튼 기능 추가
+    document.querySelectorAll('.copy-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const contentId = this.getAttribute('data-content');
+            const content = document.getElementById(contentId + '-content').textContent;
+            
+            navigator.clipboard.writeText(content.trim())
+                .then(() => {
+                    // 복사 성공 표시
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> 복사됨';
+                    this.classList.add('btn-success');
+                    this.classList.remove('btn-light');
+                    
+                    // 2초 후 원래 상태로 돌아가기
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.add('btn-light');
+                        this.classList.remove('btn-success');
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('복사 실패:', err);
+                });
+        });
+    });
+});
+</script>
+{% endblock %} 

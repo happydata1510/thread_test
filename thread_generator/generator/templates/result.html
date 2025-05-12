@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>생성된 쓰레드 컨텐츠</h3>
+                </div>
+                <div class="card-body">
+                    <h5>주제: {{ thread.topic }}</h5>
+                    <p><strong>스타일:</strong> {{ thread.get_style_display }}</p>
+                    <hr>
+                    <div class="content-box p-3 bg-light">
+                        {{ thread.content|linebreaks }}
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-success copy-btn" 
+                                onclick="copyContent('{{ thread.content|escapejs }}')">
+                            내용 복사하기
+                        </button>
+                        <a href="{% url 'home' %}" class="btn btn-primary">새 컨텐츠 만들기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyContent(content) {
+    navigator.clipboard.writeText(content)
+        .then(() => alert('복사 완료!'))
+        .catch(err => console.error('복사 실패:', err));
+}
+</script>
+{% endblock %}

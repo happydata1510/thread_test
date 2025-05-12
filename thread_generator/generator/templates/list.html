@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">생성된 쓰레드 목록</h1>
+        <p class="lead text-muted">최근 생성된 쓰레드 목록을 확인하고 수정할 수 있습니다</p>
+    </div>
+    
+    <div class="row">
+        {% for thread in threads %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header {% if thread.revised %}bg-success{% else %}bg-primary{% endif %} text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ thread.topic }}</h5>
+                    <span class="badge bg-light text-dark">{{ thread.get_style_display }}</span>
+                </div>
+                <div class="card-body">
+                    {% if thread.requirements %}
+                    <div class="mb-3">
+                        <small class="text-muted">세부 요건:</small>
+                        <p class="small">{{ thread.requirements }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="thread-content">
+                        {% if thread.revised and thread.revised_content %}
+                        <div class="alert alert-success mb-3">
+                            <small><i class="fas fa-check-circle"></i> 이 콘텐츠는 수정되었습니다.</small>
+                        </div>
+                        {{ thread.revised_content|linebreaks }}
+                        {% else %}
+                        {{ thread.content|linebreaks }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            생성: {{ thread.created_at|date:"Y-m-d H:i" }}<br>
+                            ID: {{ thread.customer.thread_id }}
+                        </small>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary copy-btn" data-content="thread-{{ thread.id }}">
+                                <i class="fas fa-copy"></i> 복사
+                            </button>
+                            {% if not thread.revised %}
+                            <a href="{% url 'revise_thread' thread_id=thread.id %}" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-pen"></i> 수정하기
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if thread.revised and thread.revised_content %}
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-secondary toggle-original" data-id="{{ thread.id }}">원본 콘텐츠 보기</button>
+                        <div class="original-content-{{ thread.id }}" style="display: none; margin-top: 10px; padding: 10px; border: 1px dashed #ccc; background-color: #f9f9f9;">
+                            {{ thread.content|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <div class="alert alert-info">
+                아직 생성된 쓰레드가 없습니다. 새로운 쓰레드를 생성해보세요.
+            </div>
+            <a href="{% url 'home' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> 새로운 쓰레드 생성하기
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> 새로운 쓰레드 작성하기
+        </a>
+    </div>
+</div>
+
+<style>
+.thread-content {
+    white-space: pre-line;
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+.card {
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 복사 버튼 기능 추가
+    document.querySelectorAll('.copy-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const contentId = this.getAttribute('data-content');
+            const threadId = contentId.split('-')[1];
+            const content = document.querySelector('.card:nth-of-type(' + threadId + ') .thread-content').textContent;
+            
+            navigator.clipboard.writeText(content.trim())
+                .then(() => {
+                    // 복사 성공 표시
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> 복사됨';
+                    this.classList.add('btn-success');
+                    this.classList.remove('btn-outline-primary');
+                    
+                    // 2초 후 원래 상태로 돌아가기
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.add('btn-outline-primary');
+                        this.classList.remove('btn-success');
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('복사 실패:', err);
+                });
+        });
+    });
+    
+    // 원본 콘텐츠 토글 버튼
+    document.querySelectorAll('.toggle-original').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const contentElem = document.querySelector('.original-content-' + id);
+            
+            if (contentElem.style.display === 'none') {
+                contentElem.style.display = 'block';
+                this.textContent = '원본 콘텐츠 숨기기';
+            } else {
+                contentElem.style.display = 'none';
+                this.textContent = '원본 콘텐츠 보기';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

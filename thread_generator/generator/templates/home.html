@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">✨ 쓰레드 컨텐츠 생성기</h1>
+        <p class="lead text-muted">AI가 당신의 쓰레드를 바이럴하게 만들어드려요</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-4">
+                    <form method="post" action="{% url 'home' %}" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="form-group mb-4">
+                            {{ customer_form.thread_id }}
+                            {% if customer_form.thread_id.errors %}
+                            <div class="alert alert-danger mt-2">
+                                {{ customer_form.thread_id.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group mb-4">
+                            {{ thread_form.topic }}
+                            {% if thread_form.topic.errors %}
+                            <div class="alert alert-danger mt-2">
+                                {{ thread_form.topic.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group mb-4">
+                            {{ thread_form.style }}
+                            {% if thread_form.style.errors %}
+                            <div class="alert alert-danger mt-2">
+                                {{ thread_form.style.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group mb-4">
+                            {{ thread_form.requirements }}
+                            {% if thread_form.requirements.errors %}
+                            <div class="alert alert-danger mt-2">
+                                {{ thread_form.requirements.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if error %}
+                        <div class="alert alert-danger mb-4">
+                            {{ error }}
+                        </div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-magic"></i> 조회수 올리는 스레드 문구 생성하기
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 통계 섹션 -->
+            <div class="stats-section mt-5">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="mb-0">{{ total_threads }}</h3>
+                                <p class="text-muted mb-0">생성된 쓰레드</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="mb-0">{{ total_views }}</h3>
+                                <p class="text-muted mb-0">전체 조회수</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="mb-0">{{ avg_views }}</h3>
+                                <p class="text-muted mb-0">평균 조회수</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-check:checked + .btn-outline-primary {
+    background-color: #007bff;
+    color: white;
+}
+.thread-form .input-group-text {
+    background: none;
+    border-right: 0;
+}
+.thread-form .form-control {
+    border-left: 0;
+}
+.stats-section .card {
+    transition: transform 0.2s;
+}
+.stats-section .card:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,263 @@
+<!-- templates/ab_test_result.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">스레드 콘텐츠 비교</h1>
+        <p class="lead text-muted">두 가지 스타일로 작성된 스레드 중 마음에 드는 버전을 선택하세요</p>
+    </div>
+
+    <div class="row">
+        <!-- 첫 번째 결과 -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">버전 A - {{ thread1.style }}</h5>
+                    <button class="btn btn-sm btn-light copy-btn" data-content="thread1" data-thread-id="{{ thread1.id }}">
+                        <i class="fas fa-copy"></i> 복사
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">주제: {{ thread1.topic }}</h6>
+                    {% if thread1.requirements %}
+                    <div class="mb-3">
+                        <small class="text-muted">세부 요건:</small>
+                        <p class="small">{{ thread1.requirements }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="thread-content" id="thread1-content">
+                        {{ thread1.content|linebreaks }}
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">ID: {{ thread1.customer.thread_id }}</small>
+                        <div>
+                            <span class="badge bg-secondary">{{ thread1.style }}</span>
+                            <a href="{% url 'revise_thread' thread_id=thread1.id %}" class="btn btn-sm btn-outline-success ml-2">
+                                <i class="fas fa-pen"></i> 수정하기
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="copy-count">
+                            <small><i class="fas fa-copy"></i> <span class="copy-count-value">{{ thread1.copies }}</span>회 복사됨</small>
+                        </div>
+                        <div class="feedback-buttons">
+                            <button class="btn btn-sm btn-outline-primary feedback-btn" data-thread-id="{{ thread1.id }}" data-type="like">
+                                <i class="fas fa-thumbs-up"></i> <span class="like-count">{{ thread1.likes }}</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger feedback-btn" data-thread-id="{{ thread1.id }}" data-type="dislike">
+                                <i class="fas fa-thumbs-down"></i> <span class="dislike-count">{{ thread1.dislikes }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 두 번째 결과 -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">버전 B - {{ thread2.style }}</h5>
+                    <button class="btn btn-sm btn-light copy-btn" data-content="thread2" data-thread-id="{{ thread2.id }}">
+                        <i class="fas fa-copy"></i> 복사
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">주제: {{ thread2.topic }}</h6>
+                    {% if thread2.requirements %}
+                    <div class="mb-3">
+                        <small class="text-muted">세부 요건:</small>
+                        <p class="small">{{ thread2.requirements }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="thread-content" id="thread2-content">
+                        {{ thread2.content|linebreaks }}
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">ID: {{ thread2.customer.thread_id }}</small>
+                        <div>
+                            <span class="badge bg-secondary">{{ thread2.style }}</span>
+                            <a href="{% url 'revise_thread' thread_id=thread2.id %}" class="btn btn-sm btn-outline-success ml-2">
+                                <i class="fas fa-pen"></i> 수정하기
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="copy-count">
+                            <small><i class="fas fa-copy"></i> <span class="copy-count-value">{{ thread2.copies }}</span>회 복사됨</small>
+                        </div>
+                        <div class="feedback-buttons">
+                            <button class="btn btn-sm btn-outline-primary feedback-btn" data-thread-id="{{ thread2.id }}" data-type="like">
+                                <i class="fas fa-thumbs-up"></i> <span class="like-count">{{ thread2.likes }}</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger feedback-btn" data-thread-id="{{ thread2.id }}" data-type="dislike">
+                                <i class="fas fa-thumbs-down"></i> <span class="dislike-count">{{ thread2.dislikes }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> 새로운 스레드 작성하기
+        </a>
+    </div>
+</div>
+
+<style>
+.thread-content {
+    white-space: pre-line;
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+.card {
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.copy-btn {
+    transition: all 0.2s;
+}
+.copy-btn:hover {
+    background-color: #f8f9fa;
+}
+.feedback-btn.active.btn-outline-primary {
+    background-color: #007bff;
+    color: white;
+}
+.feedback-btn.active.btn-outline-danger {
+    background-color: #dc3545;
+    color: white;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 복사 버튼 기능 추가
+    document.querySelectorAll('.copy-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const contentId = this.getAttribute('data-content');
+            const threadId = this.getAttribute('data-thread-id');
+            const content = document.getElementById(contentId + '-content').textContent;
+            
+            navigator.clipboard.writeText(content.trim())
+                .then(() => {
+                    // 복사 성공 표시
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> 복사됨';
+                    this.classList.add('btn-success');
+                    this.classList.remove('btn-light');
+                    
+                    // 2초 후 원래 상태로 돌아가기
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.add('btn-light');
+                        this.classList.remove('btn-success');
+                    }, 2000);
+                    
+                    // 복사 로그 기록
+                    logCopy(threadId);
+                })
+                .catch(err => {
+                    console.error('복사 실패:', err);
+                });
+        });
+    });
+    
+    // 좋아요/싫어요 버튼 기능 추가
+    document.querySelectorAll('.feedback-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const threadId = this.getAttribute('data-thread-id');
+            const feedbackType = this.getAttribute('data-type');
+            
+            submitFeedback(threadId, feedbackType, this);
+        });
+    });
+    
+    // 복사 로그 기록 함수
+    function logCopy(threadId) {
+        fetch(`/thread/${threadId}/copy-log/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 복사 횟수 업데이트
+                document.querySelectorAll(`.copy-btn[data-thread-id="${threadId}"]`).forEach(btn => {
+                    const countElement = btn.closest('.card').querySelector('.copy-count-value');
+                    if (countElement) {
+                        countElement.textContent = data.copies;
+                    }
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    // 피드백 제출 함수
+    function submitFeedback(threadId, feedbackType, button) {
+        const formData = new FormData();
+        formData.append('feedback_type', feedbackType);
+        
+        fetch(`/thread/${threadId}/feedback/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 피드백 카운트 업데이트
+                document.querySelectorAll(`.feedback-btn[data-thread-id="${threadId}"][data-type="like"] .like-count`).forEach(elem => {
+                    elem.textContent = data.likes;
+                });
+                document.querySelectorAll(`.feedback-btn[data-thread-id="${threadId}"][data-type="dislike"] .dislike-count`).forEach(elem => {
+                    elem.textContent = data.dislikes;
+                });
+                
+                // 활성화 상태 토글
+                const activeClass = feedbackType === 'like' ? 'btn-outline-primary' : 'btn-outline-danger';
+                const otherType = feedbackType === 'like' ? 'dislike' : 'like';
+                const otherActiveClass = otherType === 'like' ? 'btn-outline-primary' : 'btn-outline-danger';
+                
+                // 현재 버튼의 활성화 상태 토글
+                if (data.is_canceled) {
+                    button.classList.remove('active');
+                } else {
+                    button.classList.add('active');
+                    
+                    // 다른 버튼 비활성화
+                    document.querySelectorAll(`.feedback-btn[data-thread-id="${threadId}"][data-type="${otherType}"]`).forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    // CSRF 토큰 가져오기
+    function getCsrfToken() {
+        return document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    }
+});
+</script>
+
+<!-- CSRF 토큰 추가 -->
+{% csrf_token %}
+{% endblock %}
